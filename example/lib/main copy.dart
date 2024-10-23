@@ -1,34 +1,5 @@
-# Pivot Table for Flutter
-
-A Flutter package for creating customizable pivot tables with support for data aggregation, sorting, filtering, and grouping. This package is ideal for displaying and analyzing large datasets in a structured way.
-
-![Pivot Table Demo](docs/pivot.gif)
-
-## Features
-
-- Dynamic data pivoting based on rows and columns
-- can use with string of json array
-- Support for aggregation functions like sum, count.
-- Customizable cell renderers and formatting
-
-## Getting Started
-
-### Installation
-
-Add the following to your `pubspec.yaml` file:
-
-```yaml
-dependencies:
-  pivot_table:
-    git:
-      url: https://github.com/BoyPhanna/flutter_pivot_table.git
-```
-
-### Example Code
-
-Add the following to your `main.dart` file:
-
-```dart
+import 'package:example/item_drag.dart';
+import 'package:example/tab_taget_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:pivot_table/aggregator_functions.dart';
 import 'package:pivot_table/pivot_table.dart';
@@ -81,24 +52,98 @@ class _MyHomePageState extends State<MyHomePage> {
                               {"name": "Mona", "age": 26, "gender": "Female", "region": "West", "sales": 160, "cost": 90, "profit": 70, "products": "Electronics", "quarter": "Q2"}
       ]
 ''';
+  List<String> allFields = [
+    'region',
+    'products',
+    'quarter',
+    'age',
+    'gender',
+    'name',
+    'profit'
+  ];
+  List<String> rowFields = [];
+  List<String> columnFields = [];
+  void changeField(data, List<String> type) {
+    if (rowFields.contains(data))
+      rowFields.remove(data);
+    else if (columnFields.contains(data))
+      columnFields.remove(data);
+    else if (allFields.contains(data)) allFields.remove(data);
+    if (!type.contains(data)) {
+      type.add(data);
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(children: [
-          PivotTable(
-            marginname: 'Total Profit',
-            jsonString: jsonString,
-            rowFields: ["name", "region"],
-            columnFields: ["products", "quarter"],
-            valueFields: ['profit'],
-            valueAggregator: AggregatorFunctions.sumAggregator,
-          ),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TabTagetWidget(
+                child: Row(
+                  children: [
+                    ...allFields.map((e) {
+                      return DraggableWidget(data: e);
+                    }).toList(),
+                  ],
+                ),
+                title: "Fields",
+                onAccept: (data) {
+                  changeField(data, allFields);
+                },
+                width: double.infinity,
+                height: 80),
+            TabTagetWidget(
+                child: Row(
+                  children: [
+                    ...columnFields.map((e) {
+                      return DraggableWidget(data: e);
+                    }).toList(),
+                  ],
+                ),
+                title: "Columns",
+                color: Colors.green,
+                onAccept: (data) {
+                  changeField(data, columnFields);
+                },
+                width: double.infinity,
+                height: 80),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TabTagetWidget(
+                    child: Column(
+                      children: [
+                        ...rowFields.map((e) {
+                          return DraggableWidget(data: e);
+                        }).toList(),
+                      ],
+                    ),
+                    color: Colors.blue,
+                    title: "Rows",
+                    onAccept: (data) {
+                      changeField(data, rowFields);
+                    },
+                    width: 150,
+                    height: 400),
+                Flexible(
+                  child: PivotTable(
+                    marginname: 'Total Profit',
+                    jsonString: jsonString,
+                    rowFields: rowFields,
+                    columnFields: columnFields,
+                    valueFields: ['profit'],
+                    valueAggregator: AggregatorFunctions.sumAggregator,
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
-
-```
