@@ -2,7 +2,7 @@
 
 A Flutter package for creating customizable pivot tables with support for data aggregation, sorting, filtering, and grouping. This package is ideal for displaying and analyzing large datasets in a structured way.
 
-![Pivot Table Demo](docs/pivot.gif)
+![Pivot Table Demo](docs/pivot4.gif)
 
 ## Features
 
