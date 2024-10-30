@@ -1,156 +1,152 @@
 library pivot_table;
 
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class PivotTable extends StatelessWidget {
-  final String jsonString;
-  final List<String> rowFields; // Fields to group by in rows
-  final List<String> columnFields; // Fields to group by in columns
-  final List<String>
-      valueFields; // Fields to aggregate (e.g., 'sales', 'cost', 'profit')
-  final Function(List<dynamic>)
-      valueAggregator; // Aggregator function (e.g., sum, count, concatenate)
-  final String? marginname;
-  PivotTable({
-    required this.jsonString,
-    required this.rowFields,
-    required this.columnFields,
-    required this.valueFields,
-    required this.valueAggregator,
-    this.marginname,
-  });
+  ///Create a [PivotTable] with [jsonData], [cols], [rows], [aggregatorName], [vals], [hiddenAttributes],[marginLabel]
+  ///
+  ///Example    PivotTable(
+  ///    jsonData: jsonData,
+  ///    cols: ["Region", "Product"],
+  ///    rows: ["Customer"],
+  ///    aggregatorName: AggregatorName.count,
+  ///    vals: ["Sales"],
+  ///  );
+  ///
+  ///
+
+  const PivotTable(
+      {required this.jsonData,
+      this.cols,
+      this.rows,
+      required this.aggregatorName,
+      required this.vals,
+      this.hiddenAttributes,
+      this.marginLabel = "Total"});
+  final String jsonData;
+  final List<String>? cols;
+  final List<String>? rows;
+  final String aggregatorName;
+  final List<String> vals;
+  final List<String>? hiddenAttributes;
+  final String marginLabel;
 
   @override
   Widget build(BuildContext context) {
-    // Decode JSON to List of Maps
-    List<dynamic> dataList = jsonDecode(jsonString);
-
-    // Helper function to generate keys based on dynamic fields
-    String generateKey(Map<String, dynamic> item, List<String> fields) {
-      return fields.map((field) => item[field].toString()).join(' / ');
-    }
-
-    // Define column categories
-    Set<String> columnKeysSet = {};
-    Map<String, Map<String, List<dynamic>>> pivotTable = {};
-
-    // Fill the pivot table
-    for (var item in dataList) {
-      String rowKey = generateKey(item, rowFields);
-      String columnKey = generateKey(item, columnFields);
-
-      columnKeysSet.add(columnKey); // Collect unique column keys
-
-      pivotTable.putIfAbsent(rowKey, () => {});
-      pivotTable[rowKey]!.putIfAbsent(columnKey, () => []);
-
-      for (var valueField in valueFields) {
-        pivotTable[rowKey]![columnKey]!.add(item[valueField]);
-      }
-    }
-
-    List<String> columnKeys = columnKeysSet.toList()..sort();
-
-    // Initialize column totals and grand total
-    Map<String, dynamic> columnTotals = {for (var key in columnKeys) key: 0};
-    dynamic grandTotal = 0;
-
-    // Create table header
-    List<TableRow> tableRows = [];
-
-    // Header row: first cell empty, then dynamic column categories, then 'Total' column
-    tableRows.add(
-      TableRow(
-        children: [
-          TableCell(
-              child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    rowFields.join(' / '),
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ))),
-          ...columnKeys.map((col) => TableCell(
-              child: Padding(padding: EdgeInsets.all(8), child: Text(col)))),
-          TableCell(
-              child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('${marginname ?? 'Total'}',
-                      style: TextStyle(fontWeight: FontWeight.bold)))),
-        ],
-      ),
-    );
-
-    // Add data rows with totals
-    pivotTable.forEach((rowKey, columnValues) {
-      dynamic rowTotal = '0';
-
-      tableRows.add(
-        TableRow(
-          children: [
-            TableCell(
-                child:
-                    Padding(padding: EdgeInsets.all(8), child: Text(rowKey))),
-            ...columnKeys.map((colKey) {
-              var values = columnValues[colKey] ?? [];
-              var value = valueAggregator(values);
-              rowTotal = (rowTotal is String)
-                  ? (int.parse(rowTotal) + int.parse(value.toString()))
-                      .toString()
-                  : value;
-              columnTotals[colKey] =
-                  (columnTotals[colKey] ?? 0) + (value is int ? value : 0);
-              grandTotal = (grandTotal is int)
-                  ? grandTotal + (value is int ? value : 0)
-                  : grandTotal;
-
-              return TableCell(
-                  child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(value.toString())));
-            }).toList(),
-            // Row total
-            TableCell(
-                child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(rowTotal.toString(),
-                        style: TextStyle(fontWeight: FontWeight.bold)))),
-          ],
-        ),
-      );
-    });
-
-    // Add column totals row
-    tableRows.add(
-      TableRow(
-        children: [
-          TableCell(
-              child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('${marginname ?? 'Total'}',
-                      style: TextStyle(fontWeight: FontWeight.bold)))),
-
-          ...columnKeys.map((colKey) => TableCell(
-              child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(columnTotals[colKey]?.toString() ?? '0',
-                      style: TextStyle(fontWeight: FontWeight.bold))))),
-          // Grand total
-          TableCell(
-              child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(grandTotal.toString(),
-                      style: TextStyle(fontWeight: FontWeight.bold)))),
-        ],
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Table(
-        border: TableBorder.all(),
-        children: tableRows,
-      ),
+    return InAppWebView(
+      initialData: InAppWebViewInitialData(
+          data: html
+              .replaceAll(
+                RegExp(r'{JSON_DATA}'),
+                jsonData,
+              )
+              .replaceAll(
+                  RegExp(r'{HIDDEN_ATTRIBUTES}'),
+                  hiddenAttributes == null
+                      ? "[]"
+                      : hiddenAttributes!.toFormattedString())
+              .replaceAll(RegExp(r'{COLS}'),
+                  cols == null ? "[]" : cols!.toFormattedString())
+              .replaceAll(RegExp(r'{ROWS}'),
+                  rows == null ? "[]" : rows!.toFormattedString())
+              .replaceAll(RegExp(r'{AGGREGATOR_NAME}'), aggregatorName)
+              .replaceAll(RegExp(r'{VALS}'), vals.toFormattedString())
+              .replaceAll(RegExp(r'{MARGIN_LABEL}'), marginLabel)),
     );
   }
+}
+
+extension ListStringExtension on List<String> {
+  String toFormattedString() {
+    return '["${this.join('", "')}"]';
+  }
+}
+
+String html = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Ensures proper scaling on mobile devices -->
+    <title>PivotTable.js with JSON</title>
+    
+    <!-- Link to C3.js styles -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css">
+    
+    <!-- JavaScript libraries -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    
+    <!-- Include jQuery UI Touch Punch -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.19.0/pivot.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.19.0/pivot.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.19.0/d3_renderers.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.19.0/c3_renderers.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.19.0/export_renderers.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: "Noto Serif Khmer", serif; /* Fallback to serif if the font fails to load */
+        }
+        /* Make the output container responsive */
+        #output {
+            overflow-x: auto; /* Enables horizontal scrolling on smaller screens */
+        }
+        /* Optional: You can add some padding */
+        .pvtTable {
+            margin: 0 auto; /* Center the table */
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        \$(function(){
+            const jsonData = {JSON_DATA}; // Placeholder for your JSON data
+
+            \$("#output").pivotUI(
+                jsonData,
+                {
+                    renderers: \$.extend(
+                        \$.pivotUtilities.renderers,
+                        \$.pivotUtilities.c3_renderers,
+                        \$.pivotUtilities.d3_renderers,
+                        \$.pivotUtilities.export_renderers
+                    ),
+                    hiddenAttributes: {HIDDEN_ATTRIBUTES}, // Placeholder for hidden attributes
+                    
+                    aggregatorName: "{AGGREGATOR_NAME}", // Placeholder for aggregator name
+                    vals: {VALS}, // Placeholder for values
+                    rows: {ROWS}, // Placeholder for rows
+                    cols: {COLS}, // Placeholder for columns    
+                    onRefresh: function(config) {
+                        \$("th.pvtTotalLabel").each(function() {
+                            \$(this).text("{MARGIN_LABEL}");
+                        });
+                    }
+                }
+            );
+        });
+    </script>
+    
+    <div id="output"></div> <!-- Output container for the PivotTable -->
+</body>
+</html>
+
+
+''';
+
+class AggregatorName {
+  static const String sum = "Sum";
+  static const String count = "Count";
+  static const String avg = "Average";
+  static const String max = "Max";
+  static const String min = "Min";
 }

@@ -1,6 +1,6 @@
 name: pivot_table
 description: "A Flutter package providing a dynamic and flexible pivot table. use only json string to create pivot table."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/BoyPhanna/flutter_pivot_table.git
 repository: https://github.com/BoyPhanna/flutter_pivot_table.git
 issue_tracker: https://github.com/BoyPhanna/flutter_pivot_table.git/issues
@@ -12,6 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:
