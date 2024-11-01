@@ -34,6 +34,24 @@ dependencies:
       url: https://github.com/BoyPhanna/flutter_pivot_table.git
 ```
 
+### Web Setup
+
+To make it work properly on the Web platform, you need to add the web_support.js file inside the <head> of your web/index.html file:
+
+```index.html
+<head>
+  <!-- ... -->
+    <script type="application/javascript" src="/assets/packages/flutter_inappwebview_web/assets/web/web_support.js" defer></script>
+  <!-- ... -->
+</head>
+```
+
+### Window Setup
+
+To be able to build on Windows, you must have the nuget CLI tool available on your Windows environment.
+Follow the instructions here: https://learn.microsoft.com/en-us/nuget/install-nuget-client-tools?tabs=windows#nugetexe-cli or you can download https://www.nuget.org/downloads
+Add the folder location for the nuget.exe file to your Windows PATH environment variable.
+
 ### Example Code
 
 Add the following to your `main.dart` file:
@@ -70,8 +88,8 @@ class MyApp extends StatelessWidget {
           child: PivotTable(
             jsonData: jsonData,
             hiddenAttributes: ["Date", "Quantity"],
-            // cols: ["Region", "Product"],
-            // rows: ["Customer"],
+            cols: ["Region", "Product"],
+            rows: ["Customer"],
             aggregatorName: AggregatorName.count,
             vals: ["Sales"],
             marginLabel: "Total",

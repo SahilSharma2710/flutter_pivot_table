@@ -10,7 +10,7 @@ String jsonData = '''
                 {"Region": "South", "Product": "Tablet", "Sales": 0, "Date": "2023-10-04", "Quantity": 0, "Customer": "ABC", "Discount": 0},
                 {"Region": "West", "Product": "Smartphone", "Sales": 750, "Date": "2023-10-05", "Quantity": 4, "Customer": "AB", "Discount": 15},
                 {"Region": "កម្ពុជា", "Product": "Monitor", "Sales": 500, "Date": "2023-10-06", "Quantity": 2, "Customer": "AB", "Discount": 7}
-];
+]
 ''';
 
 void main() {
@@ -25,14 +25,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: Padding(
-          padding: EdgeInsets.only(top: 30),
+          padding: const EdgeInsets.only(top: 30),
           child: PivotTable(
             jsonData: jsonData,
-            hiddenAttributes: ["Date", "Quantity"],
-            // cols: ["Region", "Product"],
-            // rows: ["Customer"],
-            aggregatorName: AggregatorName.count,
-            vals: ["Sales"],
+            hiddenAttributes: const ["Date", "Quantity"],
+            cols: const ["Region", "Product"],
+            rows: const ["Customer"],
+            aggregatorName: AggregatorName.sum,
+            vals: const ["Sales"],
             marginLabel: "Total",
           ),
         ),
