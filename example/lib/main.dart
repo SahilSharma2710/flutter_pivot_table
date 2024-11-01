@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
             aggregatorName: AggregatorName.sum,
             vals: const ["Sales"],
             marginLabel: "Total",
+            rendererName: RendererName.tableBarchart,
           ),
         ),
       ),

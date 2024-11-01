@@ -43,7 +43,7 @@
 <body>
     <script type="text/javascript">
 
-function loadPivotTable(data,hiddenAttributes,aggregatorName,vals,rows,cols,marginLabel) {
+function loadPivotTable(data,hiddenAttributes,aggregatorName,vals,rows,cols,marginLabel,rendererName) {
     // console.log(data);
     // console.log(hiddenAttributes);
     // console.log(aggregatorName);
@@ -67,6 +67,8 @@ function loadPivotTable(data,hiddenAttributes,aggregatorName,vals,rows,cols,marg
                     vals: vals, // Placeholder for values
                     rows: rows, // Placeholder for rows
                     cols: cols, // Placeholder for columns    
+                    rendererName: rendererName,
+
                     onRefresh: function(config) {
                         $("th.pvtTotalLabel").each(function() {
                             $(this).text(marginLabel);

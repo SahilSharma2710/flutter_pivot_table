@@ -11,8 +11,9 @@ class PivotTable extends StatelessWidget {
     required this.vals,
     this.hiddenAttributes,
     this.marginLabel = "Total",
+    this.rendererName = "Table",
   }) : super(key: key);
-
+  final String rendererName;
   final String jsonData;
   final List<String>? cols;
   final List<String>? rows;
@@ -36,7 +37,8 @@ class PivotTable extends StatelessWidget {
               ${vals.toFormattedString()},
               ${rows == null ? [] : rows!.toFormattedString()},
               ${cols == null ? [] : cols!.toFormattedString()},
-              "$marginLabel"
+              "$marginLabel",
+              "$rendererName"
             );
           """);
       },
@@ -54,6 +56,18 @@ class AggregatorName {
   static const String sum = "Sum";
   static const String count = "Count";
   static const String avg = "Average";
-  static const String max = "Max";
-  static const String min = "Min";
+  static const String max = "Maximum";
+  static const String min = "Minimum";
+}
+
+class RendererName {
+  static const String table = "Table";
+  static const String tableBarchart = "Table Barchart";
+  static const String heatmap = "Heatmap";
+  static const String rowHeatmap = "Row Heatmap";
+  static const String colHeatmap = "Col Heatmap";
+  static const String horizontalBarChart = "Horizontal Bar Chart";
+  static const String barChart = "Bar Chart";
+  static const String lineChart = "Line Chart";
+  static const String areaChart = "Area Chart";
 }
