@@ -23,3 +23,8 @@
 
 - Fix mobile drag drop
 - can oppen on mobile and desktop app
+
+## 0.0.7
+
+- Fix mobile drag drop
+- can oppen on mobile and desktop app
