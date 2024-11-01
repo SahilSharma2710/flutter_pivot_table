@@ -29,14 +29,13 @@ class PivotTable extends StatelessWidget {
       onWebViewCreated: (controller) async {},
       onLoadStop: (InAppWebViewController controller, url) async {
         await controller.evaluateJavascript(source: """
-            console.log('Hello');
             loadPivotTable(
               $jsonData,
-              ${hiddenAttributes?.toFormattedString()},
+              ${hiddenAttributes == null ? [] : hiddenAttributes?.toFormattedString()},
               "$aggregatorName",
               ${vals.toFormattedString()},
-              ${rows == null ? "[]" : rows!.toFormattedString()},
-              ${cols == null ? "[]" : cols!.toFormattedString()},
+              ${rows == null ? [] : rows!.toFormattedString()},
+              ${cols == null ? [] : cols!.toFormattedString()},
               "$marginLabel"
             );
           """);
