@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>PivotTable.js</title>
 
     <!-- local CSS files -->
-    <link rel="stylesheet" type="text/css" href="css/c3.min.css">
-    <link rel="stylesheet" type="text/css" href="css/pivot.min.css">
+    <link rel="stylesheet" type="text/css" href="css/c3.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/pivot.min.css" />
 
     <!-- local JavaScript files -->
     <script type="text/javascript" src="js/d3.min.js"></script>
@@ -17,71 +17,155 @@
     <script type="text/javascript" src="js/d3_renderers.min.js"></script>
     <script type="text/javascript" src="js/c3_renderers.min.js"></script>
     <script type="text/javascript" src="js/export_renderers.min.js"></script>
-    <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+    <script
+      type="text/javascript"
+      src="js/jquery.ui.touch-punch.min.js"
+    ></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@100..900&family=Noto+Serif+Khmer:wght@100..900&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@100..900&family=Noto+Serif+Khmer:wght@100..900&display=swap");
     </style>
     <style>
-        body {font-family: "Noto Sans Khmer", sans-serif;}
-        .node {
-            border: solid 1px white;
-            font: 10px sans-serif;
-            line-height: 12px;
-            overflow: hidden;
-            position: absolute;
-            text-indent: 2px;
-        }
-        .c3-line, .c3-focused {stroke-width: 3px !important;}
-        .c3-bar {stroke: white !important; stroke-width: 1;}
-        .c3 text { font-size: 18px; color: grey;}
-        .tick line {stroke: white;}
-        .c3-axis path {stroke: grey;}
-        .c3-circle { opacity: 1 !important; }
-        .c3-xgrid-focus {visibility: hidden !important;}
+      body {
+        font-family: "Noto Sans Khmer", sans-serif;
+      }
+      .node {
+        border: solid 1px white;
+        font: 10px sans-serif;
+        line-height: 12px;
+        overflow: hidden;
+        position: absolute;
+        text-indent: 2px;
+      }
+      .c3-line,
+      .c3-focused {
+        stroke-width: 3px !important;
+      }
+      .c3-bar {
+        stroke: white !important;
+        stroke-width: 1;
+      }
+      .c3 text {
+        font-size: 18px;
+        color: grey;
+      }
+      .tick line {
+        stroke: white;
+      }
+      .c3-axis path {
+        stroke: grey;
+      }
+      .c3-circle {
+        opacity: 1 !important;
+      }
+      .c3-xgrid-focus {
+        visibility: hidden !important;
+      }
+
+      .pvtUi {
+        width: 100%;
+      }
+      .pvtTable {
+        width: 100%;
+      }
+      .pvtRows {
+        width: 15%;
+      }
+      .pvtAxisContainer {
+        background-color: white;
+        border-radius: 5px;
+      }
+      .pvtVals {
+        background-color: white;
+        border-radius: 5px;
+      }
+      /* Style for container headers */
+      .pvtAxisContainerHeader {
+        font-weight: bold;
+        padding:5px;
+        background-color: #f3f3f3;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      /* Ensure containers have some padding */
+      .pvtAxisContainer,
+      .pvtVals {
+        padding-top: 0 !important;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <script type="text/javascript">
+      function loadPivotTable(
+        data,
+        hiddenAttributes,
+        aggregatorName,
+        vals,
+        rows,
+        cols,
+        marginLabel,
+        rendererName
+      ) {
+        // console.log(data);
+        // console.log(hiddenAttributes);
+        // console.log(aggregatorName);
+        // console.log(vals);
+        // console.log(rows);
+        // console.log(cols);
+        // console.log(marginLabel);
+        $(function () {
+          $("#output")
+            .pivotUI(data, {
+              renderers: $.extend(
+                $.pivotUtilities.renderers,
+                $.pivotUtilities.c3_renderers,
+                $.pivotUtilities.d3_renderers,
+                $.pivotUtilities.export_renderers
+              ),
+              hiddenAttributes: hiddenAttributes, // Placeholder for hidden attributes
 
-function loadPivotTable(data,hiddenAttributes,aggregatorName,vals,rows,cols,marginLabel,rendererName) {
-    // console.log(data);
-    // console.log(hiddenAttributes);
-    // console.log(aggregatorName);
-    // console.log(vals);
-    // console.log(rows);
-    // console.log(cols);
-    // console.log(marginLabel);
-        $(function() {
-            $("#output").pivotUI(
-                data,
-                {
-                    renderers: $.extend(
-                        $.pivotUtilities.renderers,
-                        $.pivotUtilities.c3_renderers,
-                        $.pivotUtilities.d3_renderers,
-                        $.pivotUtilities.export_renderers
-                    ),
-                    hiddenAttributes: hiddenAttributes, // Placeholder for hidden attributes
-                    
-                    aggregatorName: aggregatorName, // Placeholder for aggregator name
-                    vals: vals, // Placeholder for values
-                    rows: rows, // Placeholder for rows
-                    cols: cols, // Placeholder for columns    
-                    rendererName: rendererName,
+              aggregatorName: aggregatorName, // Placeholder for aggregator name
+              vals: vals, // Placeholder for values
+              rows: rows, // Placeholder for rows
+              cols: cols, // Placeholder for columns
+              rendererName: rendererName,
 
-                    onRefresh: function(config) {
-                        $("th.pvtTotalLabel").each(function() {
-                            $(this).text(marginLabel);
-                        });
-                    }
-                }
-            ).show();
+              onRefresh: function (config) {
+                $("th.pvtTotalLabel").each(function () {
+                  $(this).text(marginLabel);
+                });
+              },
+            })
+            .show();
         });
 
-    }
+        $(document).ready(function () {
+          // Add headers to the containers after pivot table is initialized
+          // First container - Attributes area (Fields)
+          $(".pvtAxisContainer.pvtUnused").prepend(
+            $('<div class="pvtAxisContainerHeader">Available Fields</div>')
+          );
+
+          // Second container - Rows area
+          $(".pvtAxisContainer.pvtRows").prepend(
+            $('<div class="pvtAxisContainerHeader">Row Fields</div>')
+          );
+
+          // Third container - Columns area
+          $(".pvtAxisContainer.pvtCols").prepend(
+            $('<div class="pvtAxisContainerHeader">Column Fields</div>')
+          );
+
+          // Fourth container - Values area
+          $(".pvtVals").prepend(
+            $('<div class="pvtAxisContainerHeader">Values</div>')
+          );
+        });
+      }
     </script>
 
-    <div id="output" style="display: none;"></div>
-</body>
+    <div id="output" style="display: none"></div>
+  </body>
 </html>

@@ -23,19 +23,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.only(top: 30),
           child: PivotTable(
             jsonData: jsonData,
-            hiddenAttributes: const [
-              "SL",
-              "Date",
-              "SKU Group",
-              "SKUs",
-              "Server Type-2",
-              "Server Type-3",
-              "Server Type-4"
-            ],
+            // hiddenAttributes: const [
+            //   "SL",
+            //   "Date",
+            //   "SKU Group",
+            //   "SKUs",
+            //   "Server Type-2",
+            //   "Server Type-3",
+            //   "Server Type-4"
+            // ],
             cols: const ["Organization"],
             rows: const ["Mon", "Qtr"],
             aggregatorName: AggregatorName.sum,
